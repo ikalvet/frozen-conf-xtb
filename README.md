@@ -22,9 +22,8 @@ xtb-python<br>
 
 Usage examples:
 
-conf_gen.py benzyl_alcohol.xyz --atoms “1-6 1-4” --per “180 360” --iter 50 --save 5
-
-conf_gen.py filename.xyz --atoms “1-10 2-14 2-15 60-61” --per “360 360 180 120” --iter 500 --save 20
+frozen_conf_xtb.py benzyl_alcohol.xyz --atoms 1-6 1-4 --per 180 360 --iter 50 --save 5<br>
+frozen_conf_xtb.py filename.xyz --atoms 1-10 2-14 2-15 60-61 --per 360 360 180 120 --iter 500 --save 20
 
 Input variables (mandatory):
 
