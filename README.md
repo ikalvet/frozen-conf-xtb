@@ -13,10 +13,10 @@ Thanks to XTB, the program has no issues with metals. The program currently does
 This program currently only works in UNIX systems. Functionality under Windows cannot be guaranteed.
 
 The program itself is just a Python script (written in Python 3), however it requires a number of modules to be installed to be functional:
-scipy
-numpy
-openbabel
-xtb-python
+scipy<br>
+numpy<br>
+openbabel<br>
+xtb-python<br>
 
 <b>Usage</b>
 
