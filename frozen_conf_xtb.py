@@ -294,19 +294,24 @@ def xyzlist_2_xyzstr(xyzlist):
     return xyzstr
 
 
-def calculate_XTB_energy(geometry, charge, multiplicity=None, solvent='none'):
-    
+def calculate_XTB_energy(geometry, charge, multiplicity=None, solvent=None):
+    """
+    Calculates GFN2-XTB level energy using xtb-python
+    """
+    if multiplicity is None:
+        multiplicity = 1
+
     atomnumbers = np.array([element_to_N[l[0]] for l in geometry])
     atompositions = np.array([np.array(x[1:]) for x in geometry])
 
     atompositions = atompositions * 1.8897259886  # converting Angstrom to Bohr
 
     # Executing XTB through Python interface without ASE
-    calc = Calculator(Param.GFN2xTB, atomnumbers, atompositions, charge=charge)
+    calc = Calculator(Param.GFN2xTB, atomnumbers, atompositions, charge=charge, uhf=multiplicity-1)
     calc.set_verbosity(VERBOSITY_MUTED)
-    calc.set_solvent(get_solvent("h2o"))
+    if solvent is not None:
+        calc.set_solvent(get_solvent(solvent))
     res = calc.singlepoint()
-
     return res.get_energy()
 
 
@@ -463,10 +468,6 @@ def setup_geometry(parameters, parameter_type,
 
     var_text_line_no = zmat.index('Variables:')
     if parameter_type == 'atoms':
-        if ',' in parameters:
-            parameters = parameters.split(',')
-        else:
-            parameters = parameters.split()
         n_pairs = len(parameters)
         pairs = parameters.copy()
 
@@ -775,7 +776,7 @@ gen_mode = 'random'
 if args.systematic is True:
     gen_mode = "systematic"
 
-iterations = args.iterations
+iterations = args.iter
 n_save = args.save
 
 if args.similarity is not None:
@@ -813,10 +814,12 @@ WDIR = os.path.basename(filename) + '_' + timestamp
 
 # If periodicities of dihedral rotations were not defined by the user
 # in the arguments then they are prompted to enter them.
-if periodicities == []:
+if (args.per is None and len(params) < 3) or "all_360" in args.per:
+    periodicities = [360.0]*len(params)
+elif args.per is None and len(params) >= 3:
+    print(f"You're attempting to scan {len(params)} dihedrals. Are you sure all of them require 360-degree period?\n"
+          "Please enter periodicities for each diehdral:")
     periodicities = prompt_user_periodicities(dihedrals, rot_di_labels)
-elif periodicities == ['all_360']:
-    periodicities = [360.0]*len(dihedrals)
 
 # Getting the linenumbers in the ZMAT where
 # the rotable dihedral labels are located.
